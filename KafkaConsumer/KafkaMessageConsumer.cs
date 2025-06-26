@@ -3,13 +3,13 @@
 using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
 
-internal class KafkaMessageConsumer(DbContextProvider dbContextProvider) : IHostedService
+internal class KafkaMessageConsumer(ProgramArguments programArguments, DbContextProvider dbContextProvider) : IHostedService
 {
     private const int Concurrency = 50;
     private const string GroupId = "simple";
     private const string TopicName = "Microfinance.Commands.DisburseCommand";
-    private const string BootstrapServers = "10.42.53.125:19092,10.42.53.125:29092,10.42.53.125:39092";
-    
+    //private const string BootstrapServers = "10.42.53.125:19092,10.42.53.125:29092,10.42.53.125:39092";
+
     private readonly List<Task> kafkaListenerTasks = [];
     private readonly CancellationTokenSource cancellationTokenSource = new();
 
@@ -42,7 +42,7 @@ internal class KafkaMessageConsumer(DbContextProvider dbContextProvider) : IHost
             EnableAutoOffsetStore = false,
             GroupId = GroupId,
             AllowAutoCreateTopics = true,
-            BootstrapServers = BootstrapServers,
+            BootstrapServers = programArguments.KafkaServers, //BootstrapServers,
             AutoOffsetReset = AutoOffsetReset.Latest,
             PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky,
         };
@@ -52,7 +52,7 @@ internal class KafkaMessageConsumer(DbContextProvider dbContextProvider) : IHost
 
         consumer.Subscribe(topicName);
 
-        KafkaMessageDispatcherBase<byte[]> kafkaMessageHandler = Concurrency == 1 ? new OrderedKafkaMessageHandler(topicName, consumer, dbContextProvider) : new KafkaMessageHandler(topicName, Concurrency, consumer, dbContextProvider);
+        KafkaMessageDispatcherBase<byte[]> kafkaMessageHandler = new KafkaMessageHandler(topicName, Concurrency, consumer, dbContextProvider);
 
         Task kafkaListenerTask = kafkaMessageHandler.StartAsync(cancellationToken);
 

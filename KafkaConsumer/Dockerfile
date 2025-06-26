@@ -11,9 +11,4 @@ FROM mcr.microsoft.com/dotnet/runtime:9.0
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Optional perf/env tuning
-# ENV DOTNET_GCHeapHardLimitPercent=70 \
-    # DOTNET_GCServer=1 \
-    # DOTNET_ThreadPool_MinThreads=200
-
 ENTRYPOINT ["dotnet", "KafkaConsumer.dll"]

@@ -113,7 +113,7 @@ public abstract class ConcurrentKafkaMessageDispatcher<T>(string topicName, usho
                         {
                             lastCommittedOffset = offset;
                             var tpo = new TopicPartitionOffset(topicPartition, new Offset(offset + 1));
-                            consumer.Commit(new[] { tpo });
+                            consumer.Commit([tpo]);
 
                             //Console.WriteLine($"Committed offset: {offset + 1}");
                         }
