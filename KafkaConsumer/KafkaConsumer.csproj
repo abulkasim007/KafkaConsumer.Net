@@ -6,6 +6,7 @@
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<TargetFramework>net9.0</TargetFramework>
+		<OptimizationPreference>Speed</OptimizationPreference>
 	</PropertyGroup>
 
 	<PropertyGroup>
